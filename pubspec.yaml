@@ -49,6 +49,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -62,6 +63,14 @@ flutter:
   uses-material-design: true
   assets:
     - .env
+
+flutter_launcher_icons:
+  image_path: "assets/icon/logo.jpg"
+  android: "launcher_icon"
+  ios: true
+  min_sdk_android: 23 # Matches your Android minSdk configuration
+  image_path_android: "assets/icon/logo.jpg"
+  image_path_ios: "assets/icon/logo.jpg"
 
   # To add assets to your application, add an assets section, like this:
   # assets:

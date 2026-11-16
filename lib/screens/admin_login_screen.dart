@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hakiki_pay/utils/error_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_theme.dart';
 
@@ -52,7 +53,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         );
       }
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = ErrorHelper.getFriendlyMessage(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }

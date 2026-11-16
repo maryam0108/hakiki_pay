@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_theme.dart';
+import '../utils/error_helper.dart';
 
 class MerchantConfigScreen extends StatefulWidget {
   final Map<String, dynamic>? initialProfile;
@@ -105,7 +106,7 @@ class _MerchantConfigScreenState extends State<MerchantConfigScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not save: $e')),
+          SnackBar(content: Text(ErrorHelper.getFriendlyMessage(e))),
         );
       }
     } finally {
@@ -216,7 +217,7 @@ class _MerchantConfigScreenState extends State<MerchantConfigScreen> {
                       controller: _businessCtrl,
                       decoration: const InputDecoration(
                         labelText: 'App / Business Name',
-                        hintText: 'e.g., ChapQR',
+                        hintText: 'e.g., My Online Shop',
                         prefixIcon: Icon(Icons.storefront_outlined, size: 20),
                       ),
                     ),
@@ -226,7 +227,7 @@ class _MerchantConfigScreenState extends State<MerchantConfigScreen> {
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         labelText: 'Selcom Lipa Namba (Merchant #) *',
-                        hintText: 'e.g., 70086277',
+                        hintText: 'e.g., 70012345',
                         prefixIcon: Icon(Icons.tag_rounded, size: 20),
                       ),
                     ),
@@ -236,7 +237,7 @@ class _MerchantConfigScreenState extends State<MerchantConfigScreen> {
                       textCapitalization: TextCapitalization.characters,
                       decoration: const InputDecoration(
                         labelText: 'Registered Recipient Name (as shown in SMS) *',
-                        hintText: 'e.g., MARYAM SAID MOHAMED',
+                        hintText: 'e.g., JANE DOE JOHN',
                         prefixIcon: Icon(Icons.badge_outlined, size: 20),
                       ),
                     ),

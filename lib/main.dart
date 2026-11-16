@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'config/app_theme.dart';
 import 'config/supabase_config.dart';
 import 'screens/auth_gate.dart';
 
@@ -22,12 +23,7 @@ class HakikiPayApp extends StatelessWidget {
     return MaterialApp(
       title: 'HakikiPay',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(useMaterial3: true).copyWith(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF10B981),
-          brightness: Brightness.dark,
-        ),
-      ),
+      theme: AppTheme.darkTheme,
       home: const AuthGate(),
     );
   }

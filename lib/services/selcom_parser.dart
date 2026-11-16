@@ -3,6 +3,8 @@
 class SelcomPaymentSms {
   final String reference;
   final String? selcomRef;
+  final String? recipientName;  
+  final String? merchantNumber;  
   final int amount;
   final String senderName;
   final String channel;
@@ -14,6 +16,8 @@ class SelcomPaymentSms {
   SelcomPaymentSms({
     required this.reference,
     this.selcomRef,
+    this.recipientName,
+    this.merchantNumber,
     required this.amount,
     required this.senderName,
     required this.channel,
@@ -22,6 +26,40 @@ class SelcomPaymentSms {
     required this.phoneLast4,
     required this.transactionTime,
   });
+
+  /// Verifies that this SMS belongs to the logged-in merchant's configured Lipa Namba / Name
+  bool matchesMerchant({
+    required String configuredLipaNamba,
+    required String configuredRecipientName,
+  }) {
+    final cleanConfiguredLipa = configuredLipaNamba.trim();
+    if (cleanConfiguredLipa.isEmpty) return false;
+
+    // If the SMS explicitly contains "Merchant# XXXXXXXX" (Selcom Pay format),
+    // it MUST match the merchant's configured Lipa Namba
+    if (merchantNumber != null && merchantNumber!.isNotEmpty) {
+      if (merchantNumber!.trim() != cleanConfiguredLipa) {
+        return false;
+      }
+    }
+
+    // Optional recipient name check if present in the SMS and configured by the user
+    final cleanConfigName = configuredRecipientName.trim().toUpperCase();
+    if (recipientName != null &&
+        recipientName!.isNotEmpty &&
+        cleanConfigName.isNotEmpty) {
+      final words = cleanConfigName
+          .split(RegExp(r'\s+'))
+          .where((w) => w.length >= 2)
+          .toList();
+      final smsRecip = recipientName!.toUpperCase();
+      // Match if at least the first or last name matches the SMS recipient line
+      final anyWordMatches = words.isEmpty || words.any((w) => smsRecip.contains(w));
+      if (!anyWordMatches) return false;
+    }
+
+    return true;
+  }
 
   static ({String prefix3, String last4}) extractPhoneParts(String raw) {
     final trimmed = raw.trim();
@@ -60,6 +98,16 @@ class SelcomPaymentSms {
 
     // Format 1: Multi-line "Selcom Pay" (Lipa Namba / TanQR)
     if (text.toLowerCase().startsWith('selcom pay')) {
+      final lines = text
+          .split(RegExp(r'\r?\n'))
+          .map((l) => l.trim())
+          .where((l) => l.isNotEmpty)
+          .toList();
+
+      // Line 1 is Recipient Name (e.g. MARYAM SAID MOHAMED)
+      final recipientName = lines.length >= 2 ? lines[1].toUpperCase() : null;
+
+      final merchantMatch = RegExp(r'Merchant#\s*([A-Z0-9]+)', caseSensitive: false).firstMatch(text);
       final amountMatch = RegExp(r'TZS\s+([\d,]+(?:\.\d{2})?)', caseSensitive: false).firstMatch(text);
       final transIdMatch = RegExp(r'TransID\s+([^\r\n]+)', caseSensitive: false).firstMatch(text);
       final refMatch = RegExp(r'Ref\s+([^\r\n]+)', caseSensitive: false).firstMatch(text);
@@ -74,6 +122,7 @@ class SelcomPaymentSms {
       final amount = int.tryParse(amountStr) ?? 0;
       final transId = transIdMatch.group(1)!.trim().toUpperCase();
       final selcomRef = refMatch?.group(1)?.trim().toUpperCase();
+      final merchantNo = merchantMatch?.group(1)?.trim();
       final channel = channelMatch?.group(1)?.trim() ?? 'Selcom Pay';
 
       String senderName = 'SELCOM PAYER';
@@ -92,6 +141,8 @@ class SelcomPaymentSms {
       return SelcomPaymentSms(
         reference: transId,
         selcomRef: selcomRef,
+        recipientName: recipientName,
+        merchantNumber: merchantNo,
         amount: amount,
         senderName: senderName,
         channel: channel,
@@ -123,6 +174,8 @@ class SelcomPaymentSms {
       return SelcomPaymentSms(
         reference: ref,
         selcomRef: null,
+        recipientName: null,
+        merchantNumber: null,
         amount: amount,
         senderName: senderName,
         channel: channel,

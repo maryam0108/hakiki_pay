@@ -13,6 +13,18 @@ void backgroundSmsHandler(SmsMessage message) async {
   final parsed = SelcomPaymentSms.tryParse(message.address, message.body);
   if (parsed == null) return;
 
+  final prefs = await SharedPreferences.getInstance();
+  final configuredLipa = prefs.getString('merchant_lipa_namba') ?? '';
+  final configuredName = prefs.getString('merchant_recipient_name') ?? '';
+
+  // Only process SMS if it matches the logged-in merchant's Lipa Namba / Recipient
+  if (!parsed.matchesMerchant(
+    configuredLipaNamba: configuredLipa,
+    configuredRecipientName: configuredName,
+  )) {
+    return;
+  }
+
   try {
     await dotenv.load(fileName: ".env");
     await Supabase.initialize(
@@ -37,7 +49,6 @@ void backgroundSmsHandler(SmsMessage message) async {
       '_tx_timestamp': parsed.transactionTime,
     });
 
-    final prefs = await SharedPreferences.getInstance();
     final synced = prefs.getStringList('synced_refs') ?? [];
     if (!synced.contains(parsed.reference)) {
       synced.add(parsed.reference);

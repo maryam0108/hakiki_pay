@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hakiki_pay/screens/developer_guide_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_theme.dart';
@@ -314,6 +315,28 @@ class _MerchantConfigScreenState extends State<MerchantConfigScreen> {
                 ),
               ),
             ],
+            const SizedBox(height: 12),
+                   SizedBox(
+                     width: double.infinity,
+                     child: OutlinedButton.icon(
+                       onPressed: () {
+                         Navigator.push(
+                           context,
+                           MaterialPageRoute(
+                             builder: (_) => DeveloperGuideScreen(
+                               merchantProfile: {
+                                 'api_key': _apiKey,
+                                 'lipa_namba': _lipaCtrl.text.trim(),
+                                 'recipient_name': _recipientCtrl.text.trim().toUpperCase(),
+                               },
+                             ),
+                           ),
+                         );
+                       },
+                       icon: const Icon(Icons.code_rounded, size: 18),
+                       label: const Text('Open Integration & Testing Guide'),
+                     ),
+                   ),
           ],
         ),
       ),

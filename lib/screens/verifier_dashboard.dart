@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:another_telephony/telephony.dart';
+import 'package:hakiki_pay/screens/developer_guide_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/app_theme.dart';
@@ -261,16 +262,16 @@ class _VerifierDashboardState extends State<VerifierDashboard> {
       appBar: AppBar(
         title: Row(
           children: [
-            Container(
-              height: 30,
-              width: 30,
-              decoration: BoxDecoration(
-                color: AppTheme.secondary,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppTheme.border),
-              ),
-              child: const Icon(Icons.qr_code_scanner_rounded, size: 17, color: AppTheme.steel1),
-            ),
+            // Container(
+            //   height: 30,
+            //   width: 30,
+            //   decoration: BoxDecoration(
+            //     color: AppTheme.secondary,
+            //     borderRadius: BorderRadius.circular(8),
+            //     border: Border.all(color: AppTheme.border),
+            //   ),
+            //   child: const Icon(Icons.qr_code_scanner_rounded, size: 17, color: AppTheme.steel1),
+            // ),
             const SizedBox(width: 10),
             const Text('HakikiPay'),
           ],
@@ -297,6 +298,18 @@ class _VerifierDashboardState extends State<VerifierDashboard> {
             tooltip: 'Merchant Configuration',
             onPressed: _openConfigScreen,
           ),
+          IconButton(
+         icon: const Icon(Icons.menu_book_rounded, size: 20),
+         tooltip: 'Developer Integration Guide',
+         onPressed: () {
+           Navigator.push(
+             context,
+             MaterialPageRoute(
+               builder: (_) => DeveloperGuideScreen(merchantProfile: _merchantProfile),
+             ),
+           );
+         },
+       ),
           IconButton(
             icon: const Icon(Icons.logout_rounded, size: 20),
             tooltip: 'Sign out',
